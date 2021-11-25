@@ -8,6 +8,15 @@ Structure TImageHeader
   Padding.a
 EndStructure
 
+#ImageHeaderSize = SizeOf(TImageHeader)
+
+Procedure ConvertImageHeaderToBytesArray(*ImageHeader.TImageHeader, Array BytesArray(1))
+  Protected Offset.a
+  For Offset = 0 To #ImageHeaderSize - 1
+    BytesArray(Offset) = PeekB(*ImageHeader + Offset)
+  Next
+EndProcedure
+
 
 Procedure ConvertBufferToImage(*Buffer, BufferSize.q)
   Protected ImageHeader.TImageHeader\Size = BufferSize
@@ -30,6 +39,10 @@ Procedure ConvertBufferToImage(*Buffer, BufferSize.q)
   Protected BufferOfsset.q;offset so we can read *buffer byte by byte
   
   StartDrawing(ImageOutput(Image))
+  
+  
+  
+  
   Protected CurrentNumBytes.a = 0, Dim CurrentBytes.b(2)
   Protected Color
   Protected ImageX, ImageY
