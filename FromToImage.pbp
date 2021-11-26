@@ -7,20 +7,20 @@
   <section name="data">
     <explorer view="" pattern="0"/>
     <log show="1"/>
-    <lastopen date="2021-11-25 15:04" user="ricardo.lima" host="DESKTOP-NMSNBJ7"/>
+    <lastopen date="2021-11-25 17:09" user="ricardo.lima" host="DESKTOP-NMSNBJ7"/>
   </section>
   <section name="files">
-    <file name="Main.pb">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="1" panelstate="+"/>
-      <fingerprint md5="d03a2a1fd739f9e8baaff55375c080ef"/>
-    </file>
     <file name="FileOperations.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+"/>
+      <config load="0" scan="1" panel="1" warn="1" lastopen="1" panelstate="+"/>
       <fingerprint md5="6efb9a19aa1d945aabff15ddfef26e4a"/>
     </file>
     <file name="ImageOperations.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+"/>
-      <fingerprint md5="f0ac09e961c905f53d848a082cc64181"/>
+      <config load="0" scan="1" panel="1" warn="1" lastopen="1" panelstate="+"/>
+      <fingerprint md5="ef2eee78cfddaef75dbdcfe6adcded04"/>
+    </file>
+    <file name="Main.pb">
+      <config load="0" scan="1" panel="1" warn="1" lastopen="1" panelstate="+"/>
+      <fingerprint md5="d03a2a1fd739f9e8baaff55375c080ef"/>
     </file>
   </section>
   <section name="targets">

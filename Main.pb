@@ -88,7 +88,15 @@ Procedure ConvertBack(PathInputImage.s, PathOutputFile.s)
   
   ImageHeader.TImageHeader
   ExtractImageHeader(InputImage, @ImageHeader)
-  PrintN("size:" + ImageHeader\Size)
+  
+  *Buffer = ConvertImageToBuffer(InputImage, ImageHeader\Size)
+  If *Buffer = #Null
+    PrintN("error: couldn't allocate file on memory")
+    ProcedureReturn #False
+  EndIf
+  
+  
+  
   
   
   
@@ -173,6 +181,7 @@ Select ProgramUsage
     
     ConvertBack(PathInputImage, PathOutputFile)
     
+    Input()
   
     
   Default
