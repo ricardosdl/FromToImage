@@ -74,6 +74,18 @@ Procedure ConvertToImageNoOutputImageName(PathInputFile.s, PathOutputImage.s = "
   ProcedureReturn #True
 EndProcedure
 
+Procedure ConvertBack(PathInputImage.s, PathOutputFile.s)
+  If Not IsValidPathInputFile(PathInputImage)
+    PrintN(PathInputImage + " couldn't be opened.")
+    ProcedureReturn #False
+  EndIf
+  
+  
+  
+  
+  
+EndProcedure
+
 Global ProgramUsage.b = -1
 Global NewList ProgramParameters.s()
 
@@ -139,6 +151,9 @@ Select ProgramUsage
       Input()
       End 0
     EndIf
+    
+  Case #ConvertBack
+    
     
   
     
