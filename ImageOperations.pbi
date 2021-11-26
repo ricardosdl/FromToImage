@@ -10,13 +10,16 @@ EndStructure
 
 #ImageHeaderSize = SizeOf(TImageHeader)
 
-Procedure ConvertImageHeaderToBytesArray(*ImageHeader.TImageHeader, Array BytesArray(1))
+Procedure ConvertImageHeaderToBytesArray(*ImageHeader.TImageHeader, Array BytesArray.b(1))
   Protected Offset.a
   For Offset = 0 To #ImageHeaderSize - 1
     BytesArray(Offset) = PeekB(*ImageHeader + Offset)
   Next
 EndProcedure
 
+Procedure ConvertBytesToColor(Byte1.b = 0, Byte2.b = 0, Byte3.b = 0)
+  ProcedureReturn RGB(Byte1, Byte2, Byte3)
+EndProcedure
 
 Procedure ConvertBufferToImage(*Buffer, BufferSize.q)
   Protected ImageHeader.TImageHeader\Size = BufferSize
@@ -25,7 +28,7 @@ Procedure ConvertBufferToImage(*Buffer, BufferSize.q)
   ;each three bytes can be stored in one pixel
   Protected NumPixels.q = Round(BufferSize / 3, #PB_Round_Up)
   ;more pixels to store the orignal file size at the beggining
-  NumPixels + SizeOf(ImageHeader) / 3
+  NumPixels + #ImageHeaderSize / 3
   
   Protected SquareRootNumPixels.f = Sqr(NumPixels)
   Protected ImageWidth.q = Round(SquareRootNumPixels, #PB_Round_Up)
@@ -39,13 +42,27 @@ Procedure ConvertBufferToImage(*Buffer, BufferSize.q)
   Protected BufferOfsset.q;offset so we can read *buffer byte by byte
   
   StartDrawing(ImageOutput(Image))
+  Protected ImageX, ImageY
+  Protected Color
   
-  
-  
+  ;plot 3 pixels (9 bytes) to the beggining of the image
+  ;that will contain the input file size
+  Protected ByteOffset = 0
+  Dim BytesArrayImageHeader.b(#ImageHeaderSize - 1)
+  ConvertImageHeaderToBytesArray(@ImageHeader, BytesArrayImageHeader())
+  For ByteOffset = 0 To (#ImageHeaderSize / 3) - 1
+    Protected Byte1.b, Byte2.b, Byte3.b
+    Byte1 = BytesArrayImageHeader(ByteOffset * 3 + 0)
+    Byte2 = BytesArrayImageHeader(ByteOffset * 3 + 1)
+    Byte3 = BytesArrayImageHeader(ByteOffset * 3 + 2)
+    Color = ConvertBytesToColor(Byte1, Byte2, Byte3)
+    ImageX = (ByteOffset / 3) % ImageWidth
+    ImageY = (ByteOffset/ 3) / ImageHeight
+    Plot(ImageX, ImageY, Color)
+  Next
   
   Protected CurrentNumBytes.a = 0, Dim CurrentBytes.b(2)
-  Protected Color
-  Protected ImageX, ImageY
+  
   For BufferOfsset = 0 To BufferSize - 1
     Protected *CurrentByte.Byte = *Buffer + BufferOfsset
     CurrentNumBytes + 1
@@ -55,8 +72,8 @@ Procedure ConvertBufferToImage(*Buffer, BufferSize.q)
     Else
       CurrentNumBytes = 0
       Color = RGB(CurrentBytes(0), CurrentBytes(1), CurrentBytes(2))
-      ImageX = (BufferOfsset / 3) % ImageWidth
-      ImageY = (BufferOfsset / 3) / ImageHeight
+      ImageX = ((ByteOffset + BufferOfsset) / 3) % ImageWidth
+      ImageY = ((ByteOffset + BufferOfsset) / 3) / ImageHeight
       Plot(ImageX, ImageY, Color)
       CurrentBytes(0) = 0 : CurrentBytes(1) = 0 : CurrentBytes(2) = 0
     EndIf

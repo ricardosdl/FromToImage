@@ -39,7 +39,7 @@ Procedure PrintProgramUsage()
   PrintN("usage: fromtoimage.exe path_input_image output_file_name /convertback")
 EndProcedure
 
-Procedure ConvertToImageNoOutputImageName(PathInputFile.s)
+Procedure ConvertToImageNoOutputImageName(PathInputFile.s, PathOutputImage.s = "")
   If Not IsValidPathInputFile(PathInputFile)
     PrintN(PathInputFile + " couldn't be opened.")
     ProcedureReturn #False
@@ -54,19 +54,25 @@ Procedure ConvertToImageNoOutputImageName(PathInputFile.s)
   
   Protected Image = ConvertBufferToImage(*InputFileBuffer, BufferSize\q)
   
-  SaveImage(Image, "out.bmp", #PB_ImagePlugin_BMP, 7, 24)
+  If Image = 0
+    PrintN("error: couldn't create image")
+    ProcedureReturn #False
+  EndIf
   
+  Protected OutputImagePath.s = "out.bmp"
+  If Len(PathOutputImage) > 0
+    OutputImagePath = PathOutputImage
+  EndIf
   
+  Protected IsImageSaved = SaveImage(Image, OutputImagePath, #PB_ImagePlugin_BMP, 7, 24)
+  If IsImageSaved = 0
+    PrintN("error: couldn't save image")
+    ProcedureReturn #False
+  EndIf
   
-  
-  
-  
-  
-  
-  
+  PrintN("success: image save as '" + PathOutputImage + "'")
+  ProcedureReturn #True
 EndProcedure
-
-
 
 Global ProgramUsage.b = -1
 Global NewList ProgramParameters.s()
@@ -108,12 +114,37 @@ EndIf
 
 Select ProgramUsage
   Case #ConvertToImageNoOutputImageName
-    ConvertToImageNoOutputImageName(ProgramParameters())
+    Define IsSucess = ConvertToImageNoOutputImageName(ProgramParameters())
+    If IsSucess = 0
+      Input()
+      End 3
+    Else
+      Input()
+      End 0
+    EndIf
+  Case #ConvertToImageOutputImageName
+    Define PathInputFile.s
+    FirstElement(ProgramParameters())
+    PathInputFile = ProgramParameters()
+    
+    Define PathOutputImage.s
+    NextElement(ProgramParameters())
+    PathOutputImage = ProgramParameters()
+    
+    Define IsSucess = ConvertToImageNoOutputImageName(PathInputFile, PathOutputImage)
+    If IsSucess = 0
+      Input()
+      End 3
+    Else
+      Input()
+      End 0
+    EndIf
+    
+  
+    
   Default
     End 0
 EndSelect
-
-Input()
 
 
 
