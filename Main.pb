@@ -80,6 +80,16 @@ Procedure ConvertBack(PathInputImage.s, PathOutputFile.s)
     ProcedureReturn #False
   EndIf
   
+  Protected InputImage = LoadImage(#PB_Any, PathInputImage)
+  If InputImage = 0
+    PrintN("error: error reading input image")
+    ProcedureReturn #False
+  EndIf
+  
+  ImageHeader.TImageHeader
+  ExtractImageHeader(InputImage, @ImageHeader)
+  PrintN("size:" + ImageHeader\Size)
+  
   
   
   
@@ -153,7 +163,15 @@ Select ProgramUsage
     EndIf
     
   Case #ConvertBack
+    Define PathInputImage.s
+    FirstElement(ProgramParameters())
+    PathInputImage = ProgramParameters()
     
+    Define PathOutputFile.s
+    NextElement(ProgramParameters())
+    PathOutputFile = ProgramParameters()
+    
+    ConvertBack(PathInputImage, PathOutputFile)
     
   
     
