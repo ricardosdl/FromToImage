@@ -95,12 +95,14 @@ Procedure ConvertBack(PathInputImage.s, PathOutputFile.s)
     ProcedureReturn #False
   EndIf
   
+  Protected IsBufferSavedToFile = SaveMemoryBufferToFile(*Buffer, ImageHeader\Size, PathOutputFile)
+  If Not IsBufferSavedToFile
+    PrintN("error: couldn't save output file")
+    ProcedureReturn #False
+  EndIf
   
-  
-  
-  
-  
-  
+  FreeMemory(*Buffer)
+  ProcedureReturn #True
   
 EndProcedure
 

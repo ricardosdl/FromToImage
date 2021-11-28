@@ -19,10 +19,20 @@ Procedure.i ReadFileToMemoryBuffer(PathInputFile.s, *BufferSize.Quad)
   EndIf
   
   Protected *FileBufferPos = *FileBuffer
+  Protected TotalBytesRead.q = 0
+  Protected BytesToRead = #File_Buffer_RW_Size
   
   Repeat
-    Protected BytesRead = ReadData(InputFile, *FileBufferPos, #File_Buffer_RW_Size)
+    Protected BytesLeftToReadOnFile.q = InputFileSize - TotalBytesRead
+    If BytesLeftToReadOnFile >= #File_Buffer_RW_Size
+      BytesToRead = #File_Buffer_RW_Size
+    Else
+      BytesToRead = BytesLeftToReadOnFile
+    EndIf
+    
+    Protected BytesRead = ReadData(InputFile, *FileBufferPos, BytesToRead)
     *FileBufferPos + BytesRead
+    TotalBytesRead + BytesRead
   Until Eof(InputFile)
   
   CloseFile(InputFile)
@@ -37,20 +47,31 @@ Procedure.a SaveMemoryBufferToFile(*Buffer, *BufferSize, FileOutputPath.s)
     ProcedureReturn #False
   EndIf
   
-  Protected *BytesSaved = 0
+  Protected *BytesSavedOnFile = 0
   
   Protected BytesToWrite.q = #File_Buffer_RW_Size
   
   Repeat
+    Protected *BytesLeftToSaveOnFile = *BufferSize - *BytesSavedOnFile
+    If *BytesLeftToSaveOnFile >= #File_Buffer_RW_Size
+      BytesToWrite = #File_Buffer_RW_Size
+    Else
+      BytesToWrite = *BytesLeftToSaveOnFile
+    EndIf
+    
     Protected BytesWritten = WriteData(OutputFile, *Buffer, BytesToWrite)
+    If BytesWritten = 0
+      CloseFile(OutputFile)
+      ProcedureReturn #False
+    EndIf
+    
     *Buffer + BytesWritten
-    *BytesSaved + BytesWritten
+    *BytesSavedOnFile + BytesWritten
     
-    
-  Until #False
+  Until *BytesSavedOnFile = *BufferSize
   
-  
-  
+  CloseFile(OutputFile)
+  ProcedureReturn #True
   
 EndProcedure
 
