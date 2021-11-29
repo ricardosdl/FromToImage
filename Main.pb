@@ -152,10 +152,8 @@ Select ProgramUsage
   Case #ConvertToImageNoOutputImageName
     Define IsSucess = ConvertToImageNoOutputImageName(ProgramParameters())
     If IsSucess = 0
-      Input()
       End 3
     Else
-      Input()
       End 0
     EndIf
   Case #ConvertToImageOutputImageName
@@ -169,10 +167,8 @@ Select ProgramUsage
     
     Define IsSucess = ConvertToImageNoOutputImageName(PathInputFile, PathOutputImage)
     If IsSucess = 0
-      Input()
       End 3
     Else
-      Input()
       End 0
     EndIf
     
@@ -189,7 +185,6 @@ Select ProgramUsage
     If Not IsSuccess
       End 4
     Else
-      Input()
       End 0
     EndIf
   
