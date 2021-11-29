@@ -102,6 +102,10 @@ Procedure ConvertBack(PathInputImage.s, PathOutputFile.s)
   EndIf
   
   FreeMemory(*Buffer)
+  
+  
+  PrintN("success: file saved as '" + PathOutputFile + "'")
+  
   ProcedureReturn #True
   
 EndProcedure
@@ -181,9 +185,13 @@ Select ProgramUsage
     NextElement(ProgramParameters())
     PathOutputFile = ProgramParameters()
     
-    ConvertBack(PathInputImage, PathOutputFile)
-    
-    Input()
+    Define IsSuccess = ConvertBack(PathInputImage, PathOutputFile)
+    If Not IsSuccess
+      End 4
+    Else
+      Input()
+      End 0
+    EndIf
   
     
   Default
