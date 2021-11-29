@@ -70,7 +70,7 @@ Procedure ConvertToImageNoOutputImageName(PathInputFile.s, PathOutputImage.s = "
     ProcedureReturn #False
   EndIf
   
-  PrintN("success: image saved as '" + PathOutputImage + "'")
+  PrintN("success: image saved as '" + OutputImagePath + "'")
   ProcedureReturn #True
 EndProcedure
 
