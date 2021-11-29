@@ -10,14 +10,11 @@ EndStructure
 
 #ImageHeaderSize = SizeOf(TImageHeader)
 
-Procedure ConvertImageHeaderToBytesArray(*ImageHeader.TImageHeader, Array BytesArray.b(1))
-  Protected Offset.a
-  For Offset = 0 To #ImageHeaderSize - 1
-    BytesArray(Offset) = PeekB(*ImageHeader + Offset)
-  Next
+Procedure ConvertImageHeaderToBytesArray(*ImageHeader.TImageHeader, Array BytesArray.a(1))
+  CopyMemory(*ImageHeader, @BytesArray(0), #ImageHeaderSize)
 EndProcedure
 
-Procedure ConvertBytesToColor(Byte1.b = 0, Byte2.b = 0, Byte3.b = 0)
+Procedure ConvertBytesToColor(Byte1.a = 0, Byte2.a = 0, Byte3.a = 0)
   ProcedureReturn RGB(Byte1, Byte2, Byte3)
 EndProcedure
 
@@ -51,10 +48,10 @@ Procedure ConvertBufferToImage(*Buffer, BufferSize.q)
   ;after saving the imageheader, ByteOffset will store how many
   ;bytes we already saved on the image
   Protected ByteOffset = 0
-  Dim BytesArrayImageHeader.b(#ImageHeaderSize - 1)
+  Dim BytesArrayImageHeader.a(#ImageHeaderSize - 1)
   ConvertImageHeaderToBytesArray(@ImageHeader, BytesArrayImageHeader())
   For ByteOffset = 0 To (#ImageHeaderSize - 1) Step 3
-    Protected Byte1.b, Byte2.b, Byte3.b
+    Protected Byte1.a, Byte2.a, Byte3.a
     ;reads bytes from the imageheader, 3 bytes at a time
     Byte1 = BytesArrayImageHeader(ByteOffset + 0)
     Byte2 = BytesArrayImageHeader(ByteOffset + 1)
@@ -72,7 +69,7 @@ Procedure ConvertBufferToImage(*Buffer, BufferSize.q)
   ;CurrentNumBytes stores how many bytes we read from the buffer
   ;when it reaches 3 we convert it to a pixel and plot on the image
   ;CurrentBytes store the actual bytes values
-  Protected CurrentNumBytes.a = 0, Dim CurrentBytes.b(2)
+  Protected CurrentNumBytes.a = 0, Dim CurrentBytes.a(2)
   
   For BufferOfsset = 0 To BufferSize - 1
     Protected *CurrentByte.Byte = *Buffer + BufferOfsset
@@ -121,14 +118,14 @@ Procedure ExtractImageHeader(ImageNum.i, *ImageHeader.TImageHeader)
   
   ;Bytes stores the bytes for the image header, which we'll copy to *ImageHeader
   ;so we can read the size
-  Dim Bytes.b(#ImageHeaderSize - 1)
+  Dim Bytes.a(#ImageHeaderSize - 1)
   StartDrawing(ImageOutput(ImageNum))
   Protected CurrentByte
   For CurrentByte = 0 To #ImageHeaderSize - 1 Step 3;3 bytes per pixel
     ;calculate the positions of the bytes in the bytes array
-    Protected PosByte1.b = CurrentByte + 0
-    Protected PosByte2.b = CurrentByte + 1
-    Protected PosByte3.b = CurrentByte + 2
+    Protected PosByte1.a = CurrentByte + 0
+    Protected PosByte2.a = CurrentByte + 1
+    Protected PosByte3.a = CurrentByte + 2
     
     ;using the byte we get the pixel position
     Protected CurrentX = (PosByte1 / 3) % ImageWidth
@@ -172,7 +169,7 @@ Procedure.i ConvertImageToBuffer(ImageNum.i, BufferSize.q)
   For ImageY = StartImageY To ImageHeight - 1
     For ImageX = StartImageX To ImageWidth - 1
       ;reads the bytes from pixel and copy to buffer
-      Protected Dim Bytes.b(2)
+      Protected Dim Bytes.a(2)
       Protected Color = Point(ImageX, ImageY)
       Bytes(0) = Red(Color)
       Bytes(1) = Green(Color)
@@ -181,10 +178,16 @@ Procedure.i ConvertImageToBuffer(ImageNum.i, BufferSize.q)
       CopyMemory(@Bytes(0), *Buffer + *BufferPosition, 3)
       *BufferPosition + 3
       PixelsRead + 1
+      
+      
       If PixelsRead = NumPixels
         Break
       EndIf
     Next ImageX
+    ;in the fist iteration we skipped the first 3 pixels
+    ;now we can start from the fist column again to read the
+    ;rest of the pixels
+    StartImageX = 0
     If PixelsRead = NumPixels
       Break
     EndIf
