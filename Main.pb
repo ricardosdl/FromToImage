@@ -59,12 +59,12 @@ Procedure ConvertToImageNoOutputImageName(PathInputFile.s, PathOutputImage.s = "
     ProcedureReturn #False
   EndIf
   
-  Protected OutputImagePath.s = "out.bmp"
+  Protected OutputImagePath.s = "out.png"
   If Len(PathOutputImage) > 0
     OutputImagePath = PathOutputImage
   EndIf
   
-  Protected IsImageSaved = SaveImage(Image, OutputImagePath, #PB_ImagePlugin_BMP, 7, 24)
+  Protected IsImageSaved = SaveImage(Image, OutputImagePath, #PB_ImagePlugin_PNG, 7, 32)
   If IsImageSaved = 0
     PrintN("error: couldn't save image")
     ProcedureReturn #False
@@ -113,6 +113,8 @@ EndProcedure
 Global ProgramUsage.b = -1
 Global NewList ProgramParameters.s()
 
+UsePNGImageEncoder()
+UsePNGImageDecoder()
 
 If OpenConsole() = 0
   End 1
